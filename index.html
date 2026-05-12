@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字修仙 · 长生录</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Microsoft YaHei", sans-serif;
+  transition: all 0.25s ease;
+}
+:root {
+  --bg: #0b0f1e; --text: #e6e6f0; --card: #121629; --card2: #1a1f35; --border: #2a2f4a;
+  --accent: #7a6ff0; --accent2: #b490ff; --danger: #f25a7a; --success: #4ade80; --warn: #f59e0b; --log-bg: #0d0f1a;
+}
+.light {
+  --bg: #f8fafc; --text: #1e293b; --card: #ffffff; --card2: #f1f5f9; --border: #e2e8f0;
+  --accent: #6366f1; --accent2: #8b5cf6; --danger: #ef4444; --success: #22c55e; --warn: #f97316; --log-bg: #f8fafc;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  max-width: 1000px;
+  margin: 0 auto;
+  line-height: 1.5;
+  padding: 20px;
+}
+
+/* 主界面 */
+#main-home {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  max-width: 720px;
+  margin: 30px auto;
+}
+.home-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.home-card h2 {
+  margin-bottom: 16px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: 20px;
+}
+.home-card p {
+  line-height: 1.8;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+.author-info {
+  text-align: center;
+  font-size: 17px;
+  font-weight: bold;
+  color: var(--accent2);
+  margin-bottom: 20px;
+}
+.platform-list {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.platform {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 12px;
+}
+.platform:hover {
+  background: rgba(255,255,255,0.05);
+}
+.platform svg {
+  width: 40px;
+  height: 40px;
+}
+.platform span {
+  font-size: 13px;
+}
+.btn-enter-wrap {
+  text-align: center;
+  margin-top: 10px;
+}
+.btn-enter {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  padding: 15px 35px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.btn-enter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(122,111,240,0.3);
+}
+
+/* 游戏界面 */
+.bar {
+  display: none;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  align-items: center;
+}
+.bar.active {
+  display: flex;
+}
+.btn {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-sm { padding: 6px 10px; font-size: 13px; }
+.btn-danger { background: var(--danger); }
+.btn-success { background: var(--success); }
+.btn-warn { background: var(--warn); }
+
+.container { display: none; }
+.active { display: block; }
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+h1,h2,h3 {
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card2);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.point-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.talents {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.talent {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+}
+.talent.selected {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #fff !important;
+  border-color: var(--accent2);
+}
+.talent.white { color: var(--text); border-color: #999; }
+.talent.green { color: #22c55e; border-color: #22c55e; }
+.talent.blue { color: #3b82f6; border-color: #3b82f6; }
+.talent.yellow { color: #eab308; border-color: #eab308; }
+.talent.red { color: #ef4444; border-color: #ef4444; }
+
+.log-box {
+  background: var(--log-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  height: 420px;
+  overflow-y: auto;
+  padding: 16px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.log-item {
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.log-item.normal { background: rgba(255,255,255,0.03); }
+.log-item.good { background: rgba(72, 187, 120, 0.1); color: var(--success); }
+.log-item.bad { background: rgba(248, 113, 113, 0.1); color: var(--danger); }
+.log-item.luck { background: rgba(217, 129, 54, 0.1); color: var(--warn); }
+
+.speed-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+.speed-box input {
+  width: 140px;
+}
+.flex-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.animate-levelup {
+  animation: levelUp 0.8s forwards;
+}
+@keyframes levelUp {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.tip-msg {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--success);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  z-index: 999;
+}
+</style>
+</head>
+<body>
+
+<!-- 主页面 -->
+<div id="main-home">
+  <div class="home-card">
+    <h2>免责声明</h2>
+    <p>1. 本作品内容由AI生成，仅用于个人娱乐、休闲体验，不代表任何官方立场，不构成现实指导建议。</p>
+    <p>2. 游戏内所有剧情、数值、设定均为虚构，与现实无关，请勿过度解读或模仿。</p>
+    <p>3. 本项目为非商业性免费分享作品，作者不承担因使用本游戏所产生的任何责任。</p>
+    <p>4. 存档采用本地加密存储，作者无法获取用户数据，禁止破解、篡改、反编译游戏内容。</p>
+    <p>5. 联系邮箱: xcgzsyou@aliyun.com</p>
+    <p>6. 使用本游戏即代表您已阅读并同意以上声明。</p>
+  </div>
+
+  <div class="home-card">
+    <h2>关于作者</h2>
+    <div class="author-info">作者：星创工作室</div>
+    <div class="platform-list">
+      <div class="platform" onclick="go('bilibili')">
+        <svg viewBox="0 0 1024 1024" fill="#fb7299">
+          <path d="M184.6 286.3c-39.3 0-72.3 31.7-72.3 72.3v391.4c0 39.3 33 72.3 72.3 72.3h654.7c39.3 0 72.3-33 72.3-72.3V358.6c0-39.3-33-72.3-72.3-72.3H184.6z m47.6 67h610.3c11.4 0 22.3 11.4 22.3 22.3v25.6H162.3v-25.6c0-11.4 11.4-22.3 22.3-22.3h47.6zM162.3 512V393.6h699.3V512H162.3zm0 142.8V655h699.3v22.3c0 11.4-11.4 22.3-22.3 22.3H184.6c-11.4 0-22.3-11.4-22.3-22.3z"></path>
+          <path d="M327.3 655h67v112.3h-67zM629.7 655h67v112.3h-67z" fill="#fff"></path>
+        </svg>
+        <span>B站</span>
+      </div>
+
+      <div class="platform" onclick="go('douyin')">
+        <svg viewBox="0 0 1024 1024">
+          <path fill="#000" d="M961.7 266.6c-16.5-58-54.2-105.7-105.3-122.3-62.5-19.3-132.3-6.2-177.7 46.2-36.3 41.4-52.4 96.8-44.7 151.4 13.3 91.2 83.5 169.4 173.7 185.4v-68c-33.7 10.2-67.4-13.9-80.6-44.7-13.3-33.7-6.2-71.4 17.2-98.2 23.3-26.7 58-38.8 91.7-30.6V170.7c-85.7 18.4-159.2 81.6-181.7 163.3-22.3 81.6-6.1 167.3 42.9 230.6 49 63.2 122.4 102 204 102 20.4 0 38.8-3.1 57.2-9.2 79.5-23.5 140.8-86.8 163.2-165.3 13.3-49 13.3-102-5.1-149-16.3-44.7-52-81.5-95.8-96.9z"></path>
+          <path fill="#fe2c55" d="M448 704c-88.4 0-160-71.6-160-160V160c0-88.4 71.6-160 160-160s160 71.6 160 160v384c0 88.4-71.6 160-160 160z"></path>
+        </svg>
+        <span>抖音</span>
+      </div>
+
+      <div class="platform" onclick="go('xiaohongshu')">
+        <svg viewBox="0 0 1024 1024">
+          <path fill="#ff2442" d="M880 836H144c-17.7 0-32-14.3-32-32V180c0-17.7 14.3-32 32-32h736c17.7 0 32 14.3 32 32v624c0 17.7-14.3 32-32 32z"></path>
+          <path fill="#fff" d="M464 320c-35.3 0-64 28.7-64 64v256c0 35.3 28.7 64 64 64h96c35.3 0 64-28.7 64-64V384c0-35.3-28.7-64-64-64h-96zM288 512c0 35.3-28.7 64-64 64h-96c-35.3 0-64-28.7-64-64v-96c0-35.3 28.7-64 64-64h96c35.3 0 64 28.7 64 64v96zM896 512c0 35.3-28.7 64-64 64h-96c-35.3 0-64-28.7-64-64v-96c0-35.3 28.7-64 64-64h96c35.3 0 64 28.7 64 64v96z"></path>
+        </svg>
+        <span>小红书</span>
+      </div>
+
+      <div class="platform" onclick="go('weibo')">
+        <svg viewBox="0 0 1024 1024">
+          <path fill="#e6162d" d="M699.3 455.9c-10-30.7-32.6-53.2-63.3-53.2-35.3 0-64.7 24.7-64.7 58 0 16.5 6.1 31.7 16.5 42.9-47.1 20.2-82.6 63.5-82.6 115.2 0 70.6 59.3 128 132.4 128 73.1 0 132.4-57.4 132.4-128 0-38.8-16.5-73.7-42.9-98.2-12.2 14.4-30.7 23.5-51 23.5-21.4 0-40.9-9.1-53.2-23.5 14.4-8.2 30.7-12.2 47.1-12.2 16.5 0 31.7 4.1 44.9 11.2 12.2-10.3 20.3-24.4 20.3-40.9 0-14.4-6.1-26.5-16.5-35.7zM322.3 518.2c0-73.1 59.3-132.4 132.4-132.4 73.1 0 132.4 59.3 132.4 132.4 0 73.1-59.3 132.4-132.4 132.4-73.1 0-132.4-59.3-132.4-132.4z"></path>
+          <path fill="#e6162d" d="M864 160c88.4 0 160 71.6 160 160v384c0 88.4-71.6 160-160 160H160c-88.4 0-160-71.6-160-160V320c0-88.4 71.6-160 160-160h704z"></path>
+        </svg>
+        <span>微博</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-enter-wrap">
+    <button class="btn-enter" onclick="enterGame()">进入游戏</button>
+  </div>
+</div>
+
+<!-- 游戏界面 -->
+<div class="bar" id="game-bar">
+  <button class="btn" onclick="toggleTheme()">暗黑/白天</button>
+  <button class="btn" onclick="setLang('zh')">中文</button>
+  <button class="btn" onclick="setLang('en')">English</button>
+  <button class="btn" onclick="setLang('jp')">日本語</button>
+  <button class="btn" onclick="soundToggle()">音效</button>
+  <button class="btn btn-success" onclick="doSave()">💾 存档</button>
+  <button class="btn btn-warn" onclick="doLoad()">📂 读档</button>
+</div>
+
+<div id="panel_start" class="container">
+  <div class="panel">
+    <h1>文字修仙 · 长生录</h1>
+    <p id="desc_start">随机天赋 · 命数无常 · 求道长生</p>
+    <button class="btn" onclick="startCreate()">开始新的修仙</button>
+  </div>
+</div>
+
+<div id="panel_talent" class="container">
+  <div class="panel">
+    <h2 id="title_tal">随机天赋</h2>
+    <p id="tip_tal">从以下天赋中选择 3 个</p>
+    <div class="talents" id="talent_list"></div>
+    <button class="btn" onclick="confirmTalents()">确认选择</button>
+  </div>
+</div>
+
+<div id="panel_alloc" class="container">
+  <div class="panel">
+    <h2 id="title_alloc">属性分配</h2>
+    <p>剩余点数：<span id="rest_points">15</span></p>
+    <div class="stat-grid">
+      <div class="stat"><span>颜值</span><div class="point-row"><button class="btn btn-sm" onclick="sub('face')">-</button><span id="n_face">0</span><button class="btn btn-sm" onclick="add('face')">+</button></div></div>
+      <div class="stat"><span>智力</span><div class="point-row"><button class="btn btn-sm" onclick="sub('int')">-</button><span id="n_int">0</span><button class="btn btn-sm" onclick="add('int')">+</button></div></div>
+      <div class="stat"><span>体质</span><div class="point-row"><button class="btn btn-sm" onclick="sub('body')">-</button><span id="n_body">0</span><button class="btn btn-sm" onclick="add('body')">+</button></div></div>
+      <div class="stat"><span>家境</span><div class="point-row"><button class="btn btn-sm" onclick="sub('money')">-</button><span id="n_money">0</span><button class="btn btn-sm" onclick="add('money')">+</button></div></div>
+      <div class="stat"><span>快乐</span><div class="point-row"><button class="btn btn-sm" onclick="sub('happy')">-</button><span id="n_happy">0</span><button class="btn btn-sm" onclick="add('happy')">+</button></div></div>
+    </div>
+    <button class="btn" onclick="startGame()">开始修仙</button>
+  </div>
+</div>
+
+<div id="panel_game" class="container">
+  <div class="panel">
+    <h2 id="title_life">修仙人生</h2>
+    <div class="stat-grid">
+      <div class="stat"><span>年龄</span><span id="v_age">0</span></div>
+      <div class="stat"><span>寿命</span><span id="v_life">0</span></div>
+      <div class="stat"><span>境界</span><span id="v_realm">凡人</span></div>
+      <div class="stat"><span>修为</span><span id="v_xp">0</span></div>
+      <div class="stat"><span>颜值</span><span id="v_face">0</span></div>
+      <div class="stat"><span>智力</span><span id="v_int">0</span></div>
+      <div class="stat"><span>体质</span><span id="v_body">0</span></div>
+      <div class="stat"><span>家境</span><span id="v_money">0</span></div>
+      <div class="stat"><span>快乐</span><span id="v_happy">0</span></div>
+      <div class="stat"><span>气运</span><span id="v_luck">0</span></div>
+    </div>
+    <div class="speed-box">
+      <span>倍速</span>
+      <input type="range" min="1" max="10" value="3" id="speed_range" oninput="updateSpeed()">
+      <span id="speed_num">×3</span>
+    </div>
+    <div class="flex-row">
+      <button class="btn" onclick="nextYear()">下一年</button>
+      <button class="btn" onclick="toggleAuto()">自动修炼</button>
+      <button class="btn btn-danger" onclick="restart()">重新开始</button>
+    </div>
+    <h3>历年记录</h3>
+    <div class="log-box" id="log_box"></div>
+  </div>
+</div>
+
+<audio id="snd_click" preload="none"><source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3">
+<audio id="snd_levelup" preload="none"><source src="https://assets.mixkit.co/sfx/preview/mixkit-magic-level-up-2010.mp3">
+<audio id="snd_death" preload="none"><source src="https://assets.mixkit.co/sfx/preview/mixkit-failure-arcade-alert-notification-240.mp3">
+
+<script>
+// ==========================
+// 作者信息（你只改这里！）
+// ==========================
+const AUTHOR = {
+  name: "星创工作室",
+  links: {
+    bilibili: "",
+    douyin: "https://v.douyin.com/wq5Gqig6gWc/",
+    xiaohongshu: "https://xhslink.com/m/8RKdcJjK08b",
+    weibo: ""
+  }
+};
+
+function go(type) {
+  const url = AUTHOR.links[type];
+  if (!url) { alert("作者未设置该平台链接"); return; }
+  if (confirm("确定要打开作者主页吗？")) {
+    window.open(url, "_blank");
+  }
+}
+
+// 进入游戏：完全移除主页，只显示游戏
+function enterGame() {
+  const home = document.getElementById("main-home");
+  home.parentNode.removeChild(home); // 彻底删除主页
+  document.getElementById("game-bar").classList.add("active");
+  document.getElementById("panel_start").classList.add("active");
+}
+
+// ==========================
+// 加密存档
+// ==========================
+const SECRET_KEY = "xiuxian_2025_secure";
+function encrypt(data) {
+  const s = JSON.stringify(data);
+  let out = "";
+  for (let i=0; i<s.length; i++) {
+    out += String.fromCharCode(s.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
+  }
+  return btoa(unescape(encodeURIComponent(out)));
+}
+function decrypt(enc) {
+  try {
+    const s = decodeURIComponent(escape(atob(enc)));
+    let out = "";
+    for (let i=0; i<s.length; i++) {
+      out += String.fromCharCode(s.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
+    }
+    return JSON.parse(out);
+  } catch(e) {
+    throw new Error("存档已被篡改或损坏");
+  }
+}
+
+// ==========================
+// 游戏本体
+// ==========================
+const LANG = {
+  zh: {
+    startDesc:"随机天赋 · 命数无常 · 求道长生",talentTitle:"随机天赋",talentTip:"从以下天赋中选择 3 个",allocTitle:"属性分配",
+    lifeTitle:"修仙人生",age:"年龄",life:"寿命",realm:"境界",xp:"修为",face:"颜值",int:"智力",body:"体质",
+    money:"家境",happy:"快乐",luck:"气运",speed:"倍速",dead:"寿元耗尽，你已陨落。",immortal:"你超脱轮回，成就长生不死！",
+    realms:["凡人","炼气","筑基","金丹","元婴","化神","合体","大乘","渡劫","飞升"],
+    talentPool:{
+      white:["天资平平","家境普通","心境平和","相貌寻常","身无病痛"],
+      green:["聪慧过人","家境殷实","骨骼惊奇","心性坚韧","容貌出众"],
+      blue:["仙缘深厚","过目不忘","道心通明","百病不侵","桃花运"],
+      yellow:["天生圣体","慧根超凡","福运齐天","先天道体","转世仙尊"],
+      red:["混沌道体","万古唯一","逆天改命","鸿蒙道体","不死神体"]
+    },
+    events:[
+      {text:"你静坐吐纳，修为稳步提升。",type:"normal",xp:5},
+      {text:"你偶得古籍，智力大增。",type:"good",int:1},
+      {text:"山中灵泉洗练，体质增强。",type:"good",body:1},
+      {text:"心情愉悦，快乐+1，寿元+1。",type:"good",happy:1,life:1},
+      {text:"家族赐予资源，家境+1。",type:"good",money:1},
+      {text:"容貌愈发出众，颜值+1。",type:"normal",face:1},
+      {text:"修炼岔气，心境受损，快乐-1。",type:"bad",happy:-1},
+      {text:"遭遇小劫，寿元-2。",type:"bad",life:-2},
+      {text:"天道眷顾，气运+1，寿元+2。",type:"luck",luck:1,life:2},
+      {text:"误食毒草，体质-1，寿元-1。",type:"bad",body:-1,life:-1},
+      {text:"偶遇隐士指点，修为+15。",type:"good",xp:15},
+      {text:"心有所悟，即将突破。",type:"good",xp:20},
+      {text:"灾厄临头，气运-2，寿元-3。",type:"bad",luck:-2,life:-3},
+      {text:"天地灵气滋养，寿元+3。",type:"good",life:3},
+      {text:"凡心扰动，道心不稳。",type:"normal",happy:-1}
+    ]
+  },
+  en: {startDesc:"Talents & Immortality",realms:["Mortal","Qi","Base","Golden","Yuan","God","Union","Mahayana","Transcend","Ascend"],talentPool:{white:[],green:[],blue:[],yellow:[],red:[]},events:[]},
+  jp: {startDesc:"文字修仙物語",realms:["凡人","錬気","筑基","金丹","元婴","化神","合体","大乗","渡劫","飛昇"],talentPool:{white:[],green:[],blue:[],yellow:[],red:[]},events:[]}
+};
+
+let currentLang = "zh";
+let soundEnabled = true;
+let game = {
+  lang:"zh", dark:true, points:15, maxPoints:15,
+  stats:{face:0,int:0,body:0,money:0,happy:0,luck:0},
+  age:0, life:50, maxLife:50, xp:0, realm:0, talents:[], log:[], auto:false, timer:null, speed:3
+};
+
+const $ = (id) => document.getElementById(id);
+function show(id) { document.querySelectorAll(".container").forEach(e=>e.classList.remove("active")); $(id).classList.add("active"); }
+function shuffle(a) { return [...a].sort(()=>Math.random()-0.5); }
+function playSound(id) { if(soundEnabled){const s=$(id);s.currentTime=0;s.play().catch(()=>{});} }
+function soundToggle() { soundEnabled = !soundEnabled; }
+function renderLang() { const t=LANG[currentLang]; $("desc_start").innerText=t.startDesc; }
+function setLang(l) { currentLang=l; renderLang(); refreshAll(); }
+function toggleTheme() { document.body.classList.toggle("light"); game.dark=!game.dark; }
+
+function randomTalentsByRarity(cnt) {
+  const p=LANG[currentLang].talentPool; let r=[];
+  for(let i=0;i<cnt;i++){
+    const v=Math.random();let t;
+    if(v<0.01)t="red";else if(v<0.08)t="yellow";else if(v<0.25)t="blue";else if(v<0.6)t="green";else t="white";
+    r.push({name:shuffle(p[t])[0],rarity:t});
+  }
+  return r;
+}
+
+function startCreate() {
+  playSound("snd_click");
+  game = JSON.parse(JSON.stringify({
+    lang:currentLang,dark:game.dark,points:15,maxPoints:15,stats:{face:0,int:0,body:0,money:0,happy:0,luck:0},
+    age:0,life:50,maxLife:50,xp:0,realm:0,talents:[],log:[],auto:false,timer:null,speed:3
+  }));
+  const list=randomTalentsByRarity(8);game.talentChoices=list;game.talents=[];
+  const el=$("talent_list");el.innerHTML="";
+  list.forEach((it,idx)=>{
+    const d=document.createElement("div");d.className="talent "+it.rarity;d.innerText=it.name;
+    d.onclick=()=>{
+      if(d.classList.contains("selected")){d.classList.remove("selected");game.talents=game.talents.filter(x=>x.idx!==idx);}
+      else if(game.talents.length<3){d.classList.add("selected");game.talents.push({idx,item:it});}
+    };
+    el.appendChild(d);
+  });
+  show("panel_talent");
+}
+
+function confirmTalents(){if(game.talents.length!==3){alert("请选择3个天赋");return;}playSound("snd_click");game.points=15;game.stats={face:0,int:0,body:0,money:0,happy:0,luck:0};renderAlloc();show("panel_alloc");}
+function add(k){if(game.points<=0)return;game.stats[k]++;game.points--;renderAlloc();}
+function sub(k){if(game.stats[k]<=0)return;game.stats[k]--;game.points++;renderAlloc();}
+function renderAlloc(){$("rest_points").innerText=game.points;$("n_face").innerText=game.stats.face;$("n_int").innerText=game.stats.int;$("n_body").innerText=game.stats.body;$("n_money").innerText=game.stats.money;$("n_happy").innerText=game.stats.happy;}
+function startGame(){playSound("snd_click");game.age=0;game.life=50+game.stats.body*2;game.maxLife=game.life;game.xp=0;game.realm=0;game.log=[];game.auto=false;clearInterval(game.timer);addLog("修仙之路开启！","normal");refreshAll();show("panel_game");}
+function addLog(t,c){game.log.push({t,cls:c});if(game.log.length>200)game.log.shift();}
+function renderLog(){const b=$("log_box");b.innerHTML=game.log.map((i,ix)=>`<div class="log-item ${i.cls}">${game.age-(game.log.length-1-ix)}岁：${i.t}</div>`).join("");b.scrollTop=b.scrollHeight;}
+function refreshAll(){const t=LANG[currentLang];$("v_age").innerText=game.age;$("v_life").innerText=game.life+"/"+game.maxLife;$("v_realm").innerText=t.realms[game.realm];$("v_xp").innerText=game.xp;$("v_face").innerText=game.stats.face;$("v_int").innerText=game.stats.int;$("v_body").innerText=game.stats.body;$("v_money").innerText=game.stats.money;$("v_happy").innerText=game.stats.happy;$("v_luck").innerText=game.stats.luck;renderLog();}
+function checkRealm(){const n=[0,60,180,400,800,1400,2200,3200,4500,999999];if(game.realm>=n.length-1)return;if(game.xp>=n[game.realm+1]){game.realm++;game.maxLife+=30;game.life=game.maxLife;addLog("突破境界："+LANG[currentLang].realms[game.realm],"good");playSound("snd_levelup");$("v_realm").classList.add("animate-levelup");setTimeout(()=>$("v_realm").classList.remove("animate-levelup"),800);}}
+function nextYear(){if(game.life<=0)return;if(game.realm>=LANG[currentLang].realms.length-1){addLog(LANG[currentLang].immortal,"good");game.auto=false;clearInterval(game.timer);refreshAll();return;}game.age++;game.life--;const e=shuffle(LANG[currentLang].events)[0];addLog(e.text,e.type);for(const k in e){if(["face","int","body","money","happy","luck","life","xp"].includes(k)){if(k==="life")game.life+=e[k]||0;else if(k==="xp")game.xp+=e[k]||0;else game.stats[k]=(game.stats[k]||0)+(e[k]||0);}}game.life=Math.max(0,game.life);checkRealm();if(game.life<=0){addLog(LANG[currentLang].dead,"bad");playSound("snd_death");game.auto=false;clearInterval(game.timer);}refreshAll();}
+function updateSpeed(){game.speed=Number($("speed_range").value);$("speed_num").innerText="×"+game.speed;}
+function toggleAuto(){game.auto=!game.auto;if(game.auto){clearInterval(game.timer);game.timer=setInterval(()=>{if(game.auto&&game.life>0)nextYear();},1100/game.speed);}else{clearInterval(game.timer);}}
+function restart(){clearInterval(game.timer);game.auto=false;show("panel_start");}
+
+function doSave(){
+  playSound("snd_click");
+  try{
+    const def="修仙存档_"+new Date().toLocaleString().replace(/[\/:]/g,"-");
+    const name=prompt("存档名称",def);if(!name)return;
+    const enc=encrypt(game);
+    const blob=new Blob([enc],{type:"text/plain;charset=utf-8"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download=name+".xiuxian";
+    a.style.display="none";document.body.appendChild(a);
+    a.dispatchEvent(new MouseEvent("click",{bubbles:true,cancelable:true,view:window}));
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(a.href);},100);
+    const tip=document.createElement("div");tip.className="tip-msg";tip.innerText="✅ 加密存档成功";document.body.appendChild(tip);setTimeout(()=>tip.remove(),2000);
+  }catch(e){alert("❌ 存档失败："+e.message);}
+}
+
+function doLoad(){
+  playSound("snd_click");
+  const inp=document.createElement("input");inp.type="file";inp.accept=".xiuxian";
+  inp.onchange=(e)=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=(ev)=>{
+      try{
+        const d=decrypt(ev.target.result);
+        game=JSON.parse(JSON.stringify(d));
+        currentLang=game.lang||"zh";
+        refreshAll();show("panel_game");
+        const tip=document.createElement("div");tip.className="tip-msg";tip.innerText="✅ 读档成功";document.body.appendChild(tip);setTimeout(()=>tip.remove(),2000);
+      }catch(err){alert("❌ 读档失败："+err.message);}
+    };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+
+renderLang();
+</script>
+</body>
+</html>
